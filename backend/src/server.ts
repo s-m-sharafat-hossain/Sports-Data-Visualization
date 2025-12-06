@@ -5,6 +5,7 @@ import morgan from 'morgan';
 
 import { registerMatchRoutes } from './routes/matches';
 import { registerLeagueRoutes } from './routes/leagues';
+import { registerTeamRoutes } from './routes/teams';
 import { config } from './config/env';
 
 const app = express();
@@ -21,6 +22,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 
 registerLeagueRoutes(app);
 registerMatchRoutes(app);
+registerTeamRoutes(app);
 
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Unhandled error:', err);
