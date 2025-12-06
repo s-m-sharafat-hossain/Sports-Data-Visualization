@@ -1,0 +1,21 @@
+type CacheEntry<T> = {
+  value: T;
+  expiresAt: number;
+};
+
+const store = new Map<string, CacheEntry<unknown>>();
+
+export function setCache<T>(key: string, value: T, ttlMs: number) {
+  const expiresAt = Date.now() + ttlMs;
+  store.set(key, { value, expiresAt });
+}
+
+export function getCache<T>(key: string): T | null {
+  const entry = store.get(key) as CacheEntry<T> | undefined;
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    store.delete(key);
+    return null;
+  }
+  return entry.value;
+}
