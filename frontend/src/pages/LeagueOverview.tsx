@@ -104,7 +104,7 @@ export function LeagueOverview() {
                 </tr>
               </thead>
               <tbody>
-                {standings.map((row, idx) => (
+                {standings.map((row: StandingRow, idx: number) => (
                   <tr
                     key={row.idTeam}
                     className={idx % 2 === 0 ? 'bg-slate-950/40' : 'bg-slate-900/40'}

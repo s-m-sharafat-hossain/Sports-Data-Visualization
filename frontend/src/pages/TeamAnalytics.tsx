@@ -49,7 +49,7 @@ export function TeamAnalytics() {
       matches
         .slice()
         .reverse()
-        .map((m, idx) => ({
+        .map((m: TeamMatch, idx: number) => ({
           label: `${m.result} vs ${m.opponent}`,
           index: idx + 1,
           value: m.result === 'W' ? 3 : m.result === 'D' ? 1 : 0,
@@ -97,11 +97,11 @@ export function TeamAnalytics() {
                     tickLine={false}
                     axisLine={{ stroke: '#1f2937' }}
                     ticks={[0, 1, 3]}
-                    tickFormatter={(v) => (v === 3 ? 'W' : v === 1 ? 'D' : 'L')}
+                    tickFormatter={(v: number) => (v === 3 ? 'W' : v === 1 ? 'D' : 'L')}
                   />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#020617', borderColor: '#1f2937' }}
-                    labelFormatter={(idx) => `Match #${idx}`}
+                    labelFormatter={(idx: string | number) => `Match #${idx}`}
                   />
                   <Line type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }} />
                 </LineChart>

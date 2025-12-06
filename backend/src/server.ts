@@ -7,6 +7,7 @@ import { registerMatchRoutes } from './routes/matches';
 import { registerLeagueRoutes } from './routes/leagues';
 import { registerTeamRoutes } from './routes/teams';
 import { config } from './config/env';
+import { connectMongo } from './db/mongo';
 
 const app = express();
 const PORT = config.port;
@@ -29,6 +30,16 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ message: 'Internal server error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Backend server listening on port ${PORT}`);
-});
+async function bootstrap() {
+  try {
+    await connectMongo();
+  } catch (err) {
+    console.error('Failed to connect to MongoDB', err);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Backend server listening on port ${PORT}`);
+  });
+}
+
+bootstrap();

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { config } from '../config/env';
 import { getCache, setCache } from '../cache/memoryCache';
+import { redis } from '../db/redis';
 
 const TTL_SHORT = 30_000; // 30 seconds for live-like data
 const TTL_LONG = 5 * 60_000; // 5 minutes for standings, leagues etc.
@@ -11,12 +12,35 @@ function buildUrl(path: string) {
 }
 
 async function fetchWithCache<T>(cacheKey: string, path: string, ttl: number): Promise<T> {
+  // 1) Try Redis (cross-instance cache)
+  try {
+    const redisVal = await redis.get(cacheKey);
+    if (redisVal) {
+      return JSON.parse(redisVal) as T;
+    }
+  } catch (err) {
+    // Redis failure should not break the app; fall back to memory+API
+    console.error('Redis get error for key', cacheKey, err);
+  }
+
+  // 2) Try in-process memory cache
   const cached = getCache<T>(cacheKey);
   if (cached) return cached;
 
+  // 3) Fetch from upstream API
   const url = buildUrl(path);
   const res = await axios.get<T>(url);
+
+  // 4) Store in memory cache
   setCache(cacheKey, res.data, ttl);
+
+  // 5) Store in Redis for other instances
+  try {
+    await redis.set(cacheKey, JSON.stringify(res.data), 'PX', ttl);
+  } catch (err) {
+    console.error('Redis set error for key', cacheKey, err);
+  }
+
   return res.data;
 }
 
