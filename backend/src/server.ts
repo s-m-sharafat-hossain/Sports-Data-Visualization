@@ -7,7 +7,7 @@ import { registerMatchRoutes } from './routes/matches';
 import { registerLeagueRoutes } from './routes/leagues';
 import { registerTeamRoutes } from './routes/teams';
 import { config } from './config/env';
-import { connectMongo } from './db/mongo';
+import { connectMongo } from './database';
 
 const app = express();
 const PORT = config.port;
